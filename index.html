@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>足し算ドリル（スマホ対応＋ヒント＋正解数）</title>
+  <title>足し算ドリル（タッチ入力対応）</title>
   <style>
     body {
       text-align: center;
@@ -16,7 +16,7 @@
       font-size: 24px;
       margin-bottom: 20px;
     }
-    input, button {
+    button {
       font-size: 20px;
       padding: 10px 20px;
       margin: 10px;
@@ -62,10 +62,31 @@
       margin: 15px;
       font-weight: bold;
     }
+    #answerBox {
+      font-size: 28px;
+      border: 2px solid #888;
+      padding: 10px;
+      margin: 10px auto;
+      min-height: 40px;
+      width: 90%;
+      max-width: 300px;
+      background-color: #f9f9f9;
+    }
+    #keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-width: 300px;
+      margin: 10px auto;
+    }
+    #keypad button {
+      font-size: 24px;
+      padding: 15px 0;
+    }
   </style>
 </head>
 <body>
-  <h1>1桁の足し算ドリル（ヒント付き）</h1>
+  <h1>たしざん</h1>
 
   <div class="problem-area">
     <div class="term">
@@ -81,27 +102,31 @@
     </div>
   </div>
 
-  <button id="showHintBtn" onclick="showHint()">ヒントを見る</button>
-  <button id="closeHintBtn" onclick="hideHint()">ヒントをとじる</button><br>
+  <button id="showHintBtn" onclick="showHint()">ヒントをみる</button>
+  <button id="closeHintBtn" onclick="hideHint()">ヒントをとじる</button>
 
-  <input type="number" id="answer" placeholder="こたえを入力">
+  <div id="answerBox"> </div>
+  <div id="keypad"></div>
+
   <button onclick="checkAnswer()">こたえあわせ</button>
   <div id="result"></div>
-  <div id="score">せいかい：0問</div>
+  <div id="score">せいかい：0もん</div>
   <button onclick="generateProblem()">つぎのもんだい</button>
 
   <script>
     let num1, num2, correctAnswer;
     let correctCount = 0;
+    let userInput = "";
 
     function generateProblem() {
       num1 = Math.floor(Math.random() * 9) + 1;
       num2 = Math.floor(Math.random() * 9) + 1;
       correctAnswer = num1 + num2;
+      userInput = "";
+      updateAnswerBox();
 
       document.getElementById("num1").innerText = num1;
       document.getElementById("num2").innerText = num2;
-      document.getElementById("answer").value = "";
       document.getElementById("result").innerText = "";
 
       document.getElementById("beads1").style.display = "none";
@@ -137,8 +162,46 @@
       document.getElementById("showHintBtn").style.display = "inline-block";
     }
 
+    function updateAnswerBox() {
+      document.getElementById("answerBox").innerText = userInput || " ";
+    }
+
+    function addInput(num) {
+      if (userInput.length < 2) {
+        userInput += num;
+        updateAnswerBox();
+      }
+    }
+
+    function deleteInput() {
+      userInput = userInput.slice(0, -1);
+      updateAnswerBox();
+    }
+
+    function createKeypad() {
+      const keypad = document.getElementById("keypad");
+      keypad.innerHTML = "";
+
+      for (let i = 1; i <= 9; i++) {
+        const btn = document.createElement("button");
+        btn.innerText = i;
+        btn.onclick = () => addInput(i);
+        keypad.appendChild(btn);
+      }
+
+      const btn0 = document.createElement("button");
+      btn0.innerText = "0";
+      btn0.onclick = () => addInput(0);
+      keypad.appendChild(btn0);
+
+      const del = document.createElement("button");
+      del.innerText = "けす";
+      del.onclick = deleteInput;
+      keypad.appendChild(del);
+    }
+
     function checkAnswer() {
-      const userAnswer = Number(document.getElementById("answer").value);
+      const userAnswer = Number(userInput);
       const result = userAnswer === correctAnswer
         ? "せいかい！🎉"
         : `ざんねん…こたえは ${correctAnswer} だよ`;
@@ -146,10 +209,12 @@
 
       if (userAnswer === correctAnswer) {
         correctCount++;
-        document.getElementById("score").innerText = `せいかい：${correctCount}問`;
+        document.getElementById("score").innerText = `せいかい：${correctCount}もん`;
       }
     }
 
+    // 初期表示
+    createKeypad();
     generateProblem();
   </script>
 </body>
