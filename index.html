@@ -88,6 +88,10 @@
       font-size: 20px;
       padding: 12px 0;
     }
+    .red {
+  background-color: red;
+  color: white;
+    }
   </style>
 </head>
 <body>
@@ -116,7 +120,7 @@
   <button onclick="checkAnswer()">こたえあわせ</button>
   <div id="result"></div>
   <div id="score">せいかい：0もん</div>
-  <button onclick="generateProblem()">つぎのもんだい</button>
+  <button id="nextBtn" onclick="generateProblem()">つぎのもんだい</button>
 
   <script>
     let num1, num2, correctAnswer;
@@ -138,6 +142,8 @@
       document.getElementById("beads2").style.display = "none";
       document.getElementById("closeHintBtn").style.display = "none";
       document.getElementById("showHintBtn").style.display = "inline-block";
+      document.getElementById("nextBtn").classList.remove("red");
+
 
       drawBeads("beads1", num1);
       drawBeads("beads2", num2);
@@ -211,6 +217,8 @@
         ? "せいかい！🎉"
         : `ざんねん…こたえは ${correctAnswer} だよ`;
       document.getElementById("result").innerText = result;
+      document.getElementById("nextBtn").classList.add("red");
+
 
       if (userAnswer === correctAnswer) {
         correctCount++;
